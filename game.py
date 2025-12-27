@@ -28,7 +28,8 @@ class Game:
             "УПРАВЛЕНИЕ:",
             "← A - Влево",
             "→ D - Вправо", 
-            "SPACE - Сигнал"
+            "SPACE - Сигнал",
+            "E - Фары вкл/выкл"  # Новая подсказка!
         ]
         
         for i, text in enumerate(controls):
@@ -44,9 +45,16 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                
+                # Обрабатываем нажатия кнопок
                 if event.type == pygame.KEYDOWN:
+                    # Сигнал на ПРОБЕЛ
                     if event.key == pygame.K_SPACE:
                         self.car.beep()
+                    
+                    # Новое! Фары на кнопку E
+                    if event.key == pygame.K_e:
+                        self.car.toggle_headlights()
             
             # Управление машинкой
             keys = pygame.key.get_pressed()
