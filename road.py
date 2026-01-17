@@ -1,10 +1,5 @@
 import pygame
-import sys
-import random
 
-# ============================================
-# КЛАСС ДОРОГА
-# ============================================
 class Road:
     """Дорога, которая движется вниз"""
     
@@ -12,17 +7,19 @@ class Road:
         self.width = screen_width
         self.height = screen_height
         self.road_width = 400
-        self.speed = 5  # Скорость движения дороги
-        self.line_offset = 0  # Смещение линий разметки
+        self.base_speed = 5
+        self.current_speed = 5
+        self.line_offset = 0
         
         # Цвета
         self.grass_color = (0, 180, 0)
         self.road_color = (60, 60, 60)
         self.line_color = (255, 255, 0)
     
-    def update(self):
-        """Двигаем разметку вниз"""
-        self.line_offset += self.speed
+    def update(self, player_speed=5):
+        """Двигаем разметку вниз с учётом скорости игрока"""
+        self.current_speed = player_speed
+        self.line_offset += self.current_speed
         if self.line_offset > 60:
             self.line_offset = 0
     
@@ -48,4 +45,8 @@ class Road:
     
     def get_right_edge(self):
         """Правая граница дороги"""
-        return (self.width + self.road_width) // 2 - 30
+        return (self.width + self.road_width) // 2
+    
+    def get_current_speed(self):
+        """Получить текущую скорость дороги"""
+        return self.current_speed
