@@ -14,7 +14,7 @@ class Car:
         self.height = 50
         
         # Параметры движения
-        self.base_speed = 5  # Базовая скорость движения влево/вправо
+        self.base_speed = 100  # Базовая скорость движения влево/вправо
         self.current_speed = 0  # Текущая скорость игрока
         self.max_speed = 15  # Максимальная скорость
         self.min_speed = 3   # Минимальная скорость
@@ -156,3 +156,97 @@ class Car:
     def get_rect(self):
         """Получаем прямоугольник для проверки столкновений"""
         return pygame.Rect(self.x - 25, self.y - 25, 50, 50)
+
+# ===== ДЕМО-РЕЖИМ =====
+if __name__ == "__main__":
+    """Демонстрация класса Car - можно управлять машинкой!"""
+    
+    # Инициализация
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("🚗 ДЕМО: Класс Car - Машинка игрока")
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont(None, 24)
+    font_large = pygame.font.SysFont(None, 36)
+    
+    # Создаём машинку в центре экрана
+    car = Car(400, 300, color=(255, 0, 0), number=777)
+    
+    # Простой фон (трава)
+    grass_color = (0, 180, 0)
+    
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    car.beep()
+                if event.key == pygame.K_e:
+                    car.toggle_headlights()
+        
+        # Управление
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            car.move_left()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            car.move_right()
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            car.accelerate()
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            car.brake()
+        
+        # Обновление скорости
+        car.update_speed()
+        
+        # Не даём выехать за экран
+        if car.x < 50:
+            car.x = 50
+        if car.x > 750:
+            car.x = 750
+        
+        # Рисование
+        screen.fill(grass_color)
+        car.draw(screen)
+        
+        # Заголовок
+        title = font_large.render("ДЕМО: Класс Car 🚗", True, (255, 255, 255))
+        screen.blit(title, (10, 10))
+        
+        # Параметры машинки
+        params = [
+            f"Позиция X: {int(car.x)}",
+            f"Позиция Y: {int(car.y)}",
+            f"Скорость: {int(car.current_speed * 10)} км/ч",
+            f"Фары: {'ВКЛ 💡' if car.headlights_on else 'ВЫКЛ'}",
+            f"Цвет: {car.color}",
+            f"Номер: {car.number}",
+        ]
+        
+        y_offset = 60
+        for param in params:
+            surface = font.render(param, True, (255, 255, 255))
+            screen.blit(surface, (10, y_offset))
+            y_offset += 25
+        
+        # Управление
+        controls = [
+            "УПРАВЛЕНИЕ:",
+            "← A / → D - Влево/Вправо",
+            "↑ W - Ускорение",
+            "↓ S - Торможение",
+            "SPACE - Сигнал БИП!",
+            "E - Включить/выключить фары",
+        ]
+        
+        y_offset = 400
+        for text in controls:
+            surface = font.render(text, True, (255, 255, 0))
+            screen.blit(surface, (10, y_offset))
+            y_offset += 25
+        
+        pygame.display.flip()
+        clock.tick(60)
+    
+    pygame.quit()

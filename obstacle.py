@@ -94,3 +94,134 @@ class ObstacleCar:
             self.width,
             self.height
         )
+
+# ===== ДЕМО-РЕЖИМ =====
+if __name__ == "__main__":
+    """Демонстрация класса ObstacleCar - встречные машины!"""
+    
+    import pygame
+    
+    # Инициализация
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("🚙 ДЕМО: Класс ObstacleCar - Препятствия")
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont(None, 24)
+    font_large = pygame.font.SysFont(None, 36)
+    
+    # Цвета
+    grass_color = (0, 180, 0)
+    road_color = (60, 60, 60)
+    
+    # Создаём несколько машин для демонстрации
+    obstacles = []
+    spawn_timer = 0
+    
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    # Создаём новую машину по нажатию пробела
+                    x = random.randint(250, 550)
+                    obstacle = ObstacleCar(x, -50, speed=random.randint(3, 8))
+                    obstacles.append(obstacle)
+        
+        # Автоматическая генерация машин
+        spawn_timer += 1
+        if spawn_timer > 90:
+            x = random.randint(250, 550)
+            obstacle = ObstacleCar(x, -50, speed=random.randint(3, 8))
+            obstacles.append(obstacle)
+            spawn_timer = 0
+        
+        # Обновление всех машин
+        for obstacle in obstacles[:]:
+            obstacle.update()
+            if obstacle.is_off_screen(600):
+                obstacles.remove(obstacle)
+        
+        # Рисование
+        screen.fill(grass_color)
+        
+        # Рисуем дорогу
+        pygame.draw.rect(screen, road_color, (200, 0, 400, 600))
+        
+        # Разметка
+        for y in range(0, 600, 60):
+            pygame.draw.rect(screen, (255, 255, 0), (395, y, 10, 30))
+        
+        # Рисуем все машины
+        for obstacle in obstacles:
+            obstacle.draw(screen)
+        
+        # Заголовок
+        title = font_large.render("ДЕМО: Класс ObstacleCar 🚙", True, (255, 255, 255))
+        title_bg = pygame.Surface((title.get_width() + 20, title.get_height() + 10))
+        title_bg.fill((0, 0, 0))
+        title_bg.set_alpha(200)
+        screen.blit(title_bg, (5, 5))
+        screen.blit(title, (10, 10))
+        
+        # Параметры
+        params = [
+            f"Количество машин: {len(obstacles)}",
+            f"Таймер создания: {90 - spawn_timer}",
+        ]
+        
+        y_offset = 60
+        for param in params:
+            bg = pygame.Surface((350, 25))
+            bg.fill((0, 0, 0))
+            bg.set_alpha(200)
+            screen.blit(bg, (5, y_offset - 2))
+            surface = font.render(param, True, (255, 255, 255))
+            screen.blit(surface, (10, y_offset))
+            y_offset += 25
+        
+        # Показываем параметры каждой машины
+        if obstacles:
+            y_offset += 10
+            surface = font.render("ПАРАМЕТРЫ МАШИН:", True, (255, 255, 0))
+            bg = pygame.Surface((350, 25))
+            bg.fill((0, 0, 0))
+            bg.set_alpha(200)
+            screen.blit(bg, (5, y_offset - 2))
+            screen.blit(surface, (10, y_offset))
+            y_offset += 25
+            
+            for i, obs in enumerate(obstacles[:5]):  # Показываем только первые 5
+                text = f"Машина {i+1}: X={int(obs.x)} Y={int(obs.y)} Speed={obs.speed}"
+                bg = pygame.Surface((500, 20))
+                bg.fill((0, 0, 0))
+                bg.set_alpha(200)
+                screen.blit(bg, (5, y_offset - 2))
+                surface = font.render(text, True, (200, 200, 200))
+                screen.blit(surface, (10, y_offset))
+                y_offset += 20
+        
+        # Управление
+        controls = [
+            "УПРАВЛЕНИЕ:",
+            "SPACE - Создать новую машину",
+            "",
+            "Машины автоматически создаются",
+            "и двигаются вниз!",
+        ]
+        
+        y_offset = 450
+        for text in controls:
+            bg = pygame.Surface((400, 25))
+            bg.fill((0, 0, 0))
+            bg.set_alpha(200)
+            screen.blit(bg, (5, y_offset - 2))
+            surface = font.render(text, True, (255, 255, 0))
+            screen.blit(surface, (10, y_offset))
+            y_offset += 25
+        
+        pygame.display.flip()
+        clock.tick(60)
+    
+    pygame.quit()
