@@ -196,7 +196,7 @@ class Game:
         self.screen.blit(record_surface, (10, 50))
         
         # Скорость
-        speed_text = f"СКОРОСТЬ: {int(self.car.get_speed())}"
+        speed_text = f"СКОРОСТЬ: {int(self.car.get_speed())*10} км/ч"
         speed_surface = self.font_small.render(speed_text, True, (200, 200, 200))
         self.screen.blit(speed_surface, (10, 80))
     
